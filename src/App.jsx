@@ -213,35 +213,6 @@ function CountdownIntro({ onComplete }) {
 }
 
 // Animated number counter
-function AnimatedCounter({ target, duration = 2000, suffix = "" }) {
-  const [value, setValue] = useState(0);
-  const [started, setStarted] = useState(false);
-  const ref = useRef(null);
-
-  useEffect(() => {
-    const observer = new IntersectionObserver(
-      ([entry]) => { if (entry.isIntersecting) setStarted(true); },
-      { threshold: 0.5 }
-    );
-    if (ref.current) observer.observe(ref.current);
-    return () => observer.disconnect();
-  }, []);
-
-  useEffect(() => {
-    if (!started) return;
-    let start = 0;
-    const step = target / (duration / 16);
-    const interval = setInterval(() => {
-      start += step;
-      if (start >= target) { setValue(target); clearInterval(interval); }
-      else setValue(Math.floor(start));
-    }, 16);
-    return () => clearInterval(interval);
-  }, [started, target, duration]);
-
-  return <span ref={ref}>{value.toLocaleString()}{suffix}</span>;
-}
-
 // Event Card Component
 function EventCard({ event, index }) {
   const [hovered, setHovered] = useState(false);
@@ -808,43 +779,6 @@ export default function App() {
         }}>
           <span style={{ fontSize: "11px", color: BRAND.gray, letterSpacing: "0.2em" }}>SCROLL</span>
           <div style={{ width: "1px", height: "24px", background: `linear-gradient(to bottom, ${BRAND.gray}, transparent)` }} />
-        </div>
-      </section>
-
-      {/* Stats Section */}
-      <section style={{
-        padding: "60px 24px",
-        borderTop: `1px solid #ffffff08`,
-        borderBottom: `1px solid #ffffff08`,
-      }}>
-        <div style={{
-          maxWidth: "900px",
-          margin: "0 auto",
-          display: "grid",
-          gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-          gap: "32px",
-          textAlign: "center",
-        }}>
-          {[
-            { num: 4, suffix: "개", label: "종목", icon: "🏃" },
-          ].map((stat, i) => (
-            <div key={i} style={{ padding: "16px" }}>
-              <div style={{ fontSize: "28px", marginBottom: "8px" }}>{stat.icon}</div>
-              <div style={{
-                fontFamily: "'Do Hyeon', sans-serif",
-                fontSize: "clamp(32px, 5vw, 48px)",
-                fontWeight: 900,
-                background: `linear-gradient(135deg, ${BRAND.white}, ${BRAND.primary})`,
-                WebkitBackgroundClip: "text",
-                WebkitTextFillColor: "transparent",
-              }}>
-                <AnimatedCounter target={stat.num} suffix={stat.suffix} />
-              </div>
-              <div style={{ fontSize: "14px", color: BRAND.gray, marginTop: "4px", fontWeight: 400 }}>
-                {stat.label}
-              </div>
-            </div>
-          ))}
         </div>
       </section>
 
