@@ -459,7 +459,6 @@ export default function App() {
   const handleSubmit = async () => {
     if (!emailInput) return;
 
-    // 이메일 유효성 검사
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(emailInput)) {
       setError(true);
@@ -470,15 +469,16 @@ export default function App() {
     setError(false);
 
     try {
-      // 로컬 저장 (나중에 Formspree 폼 ID로 교체 가능)
-      const saved = JSON.parse(localStorage.getItem('munbakplay_emails') || '[]');
-      saved.push({ email: emailInput, date: new Date().toISOString() });
-      localStorage.setItem('munbakplay_emails', JSON.stringify(saved));
-
-      // 짧은 딜레이로 UX 개선
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      setSubmitted(true);
+      const res = await fetch("https://formspree.io/f/xdalbekz", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: emailInput }),
+      });
+      if (res.ok) {
+        setSubmitted(true);
+      } else {
+        setError(true);
+      }
     } catch (err) {
       setError(true);
     } finally {
@@ -500,13 +500,16 @@ export default function App() {
     setBottomError(false);
 
     try {
-      const saved = JSON.parse(localStorage.getItem('munbakplay_emails') || '[]');
-      saved.push({ email: bottomEmailInput, date: new Date().toISOString() });
-      localStorage.setItem('munbakplay_emails', JSON.stringify(saved));
-
-      await new Promise(resolve => setTimeout(resolve, 500));
-
-      setBottomSubmitted(true);
+      const res = await fetch("https://formspree.io/f/xdalbekz", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: bottomEmailInput }),
+      });
+      if (res.ok) {
+        setBottomSubmitted(true);
+      } else {
+        setBottomError(true);
+      }
     } catch (err) {
       setBottomError(true);
     } finally {
@@ -960,7 +963,7 @@ export default function App() {
               </button>
               {bottomError && (
                 <p style={{ width: '100%', color: '#FF4444', marginTop: '12px', fontSize: '14px', textAlign: 'center' }}>
-                  올바른 이메일을 입력해주세요
+                  다시 시도해주세요
                 </p>
               )}
             </div>
